@@ -7,8 +7,7 @@ var Spotify = require("node-spotify-api");
 var keys = require("./keys.js")
 var spotify = new Spotify(keys.spotify);
 var client = new Twitter(keys.twitter);
-console.log(spotify, client);
-function goLiri (action, item1) {
+function goLiri(action, item1) {
     switch (action) {
         case ("my-tweets"):
             myTweets();
@@ -24,7 +23,7 @@ function goLiri (action, item1) {
             break;
         default:
             break;
-    }    
+    }
 }
 var action = process.argv[2];
 var item1 = process.argv[3];
@@ -33,18 +32,44 @@ goLiri(action, item1);
 
 
 function myTweets() {
+    var params = {
+        user_id: 'Phil99323772',
+        count: 10,
+        lang: 'en'
+      }
+    client.get('statuses/user_timeline', params, function (error, tweets, response) {
+        if (!error) {
+            tweets.forEach(e => {
+                console.log(e.text);
+            });
+        }
+    });
     //This will show your last 20 tweets and when they were created at in your terminal/bash window.
 
 
 }
 
 function spotifyThisSong(song_title) {
-    if(!song_title) {
+    if (!song_title) {
         song_title = "The Sign";
     }
-    console.log("Starting spotify function");
-    console.log(song_title);
-    console.log("Ending spotify function");
+    spotify.search({ type: 'track', query: song_title, limit: 10 }, function (err, data) {
+        if (err) {
+            return console.log('Error occurred: ' + err);
+        }
+        var song;
+        data.tracks.items.forEach(function (e) {
+            if (e.name.toLowerCase() == song_title.toLowerCase()) {
+                if (!song) {
+                    console.log("Song name: " + e.name);
+                    console.log(e.preview_url);
+                    console.log("Artist name: " + e.artists[0].name);
+                    console.log("Album name: " + e.album.name);
+                    song = e.name;
+                }
+            }
+        });
+    });
     //   This will show the following information about the song in your terminal/bash window
 
     //     * Artist(s)
@@ -99,25 +124,25 @@ function movieThis(movie_name) {
 
 function doWhatItSays() {
 
-    fs.readFile("random.txt", "utf8", function(error, data) {
+    fs.readFile("random.txt", "utf8", function (error, data) {
 
         // If the code experiences any errors it will log the error to the console.
         if (error) {
-          return console.log(error);
+            return console.log(error);
         }
-      
+
         // We will then print the contents of data
         //console.log(data);
-      
+
         // Then split it by commas (to make it more readable)
         var dataArr = data.split(",");
-      
+
         // We will then re-display the content as an array for later use.
         //console.log(dataArr);
         var txtAction = dataArr[0];
         var txtSong = dataArr[1];
         goLiri(txtAction, txtSong);
-      });
+    });
     // * Using the `fs` Node package, LIRI will take the text inside of random.txt and then use it to call one of LIRI's commands.
 
     // * It should run `spotify-this-song` for "I Want it That Way," as follows the text in `random.txt`.
