@@ -34,12 +34,12 @@ goLiri(action, item1);
 function myTweets() {
     var params = {
         user_id: 'Phil99323772',
-        count: 10,
+        count: 20,
         lang: 'en'
-      }
+    }
     client.get('statuses/user_timeline', params, function (error, tweets, response) {
         if (!error) {
-            tweets.forEach(e => {
+            tweets.forEach(function (e) {
                 console.log(e.text);
             });
         }
